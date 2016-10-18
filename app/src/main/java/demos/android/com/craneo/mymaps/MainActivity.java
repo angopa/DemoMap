@@ -21,13 +21,17 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
 import java.util.List;
@@ -50,6 +54,8 @@ public class MainActivity extends AppCompatActivity
             NEWYORK_LNG = -74.005973;
 
     private GoogleApiClient mLocationClient;
+    private LocationListener mLocationListener;
+    private Marker marker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +64,6 @@ public class MainActivity extends AppCompatActivity
         if (servicesOk()) {
             setContentView(R.layout.activity_map);
             initMap();
-//            mMap.setMyLocationEnabled(true);
         } else {
             setContentView(R.layout.activity_main);
             Toast.makeText(this, "Map not connected!", Toast.LENGTH_SHORT).show();
@@ -165,6 +170,19 @@ public class MainActivity extends AppCompatActivity
             double lng = add.getLongitude();
 
             gotoLocation(lat, lng, ZOOM_VALUE);
+
+            if(marker != null){
+                marker.remove();
+            }
+            MarkerOptions options = new MarkerOptions()
+                    .title(locality)
+                    .position(new LatLng(lat, lng))
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_marker));
+//                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+
+
+            marker = mMap.addMarker(options);
+
         }
     }
 
@@ -172,12 +190,7 @@ public class MainActivity extends AppCompatActivity
         if (ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    MY_PERMISSIONS_REQUEST_FINE_LOCATION);
-
-
+            requestPermissions();
         }
         Location currentLocation = LocationServices.FusedLocationApi
                 .getLastLocation(mLocationClient);
@@ -198,6 +211,33 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         Toast.makeText(this, "Ready to map!", Toast.LENGTH_SHORT).show();
+
+//        mLocationListener = new LocationListener() {
+//            @Override
+//            public void onLocationChanged(Location location) {
+////                Toast.makeText(MainActivity.this,
+////                        "Location Changed: "+location.getLongitude()+", "+location.getLatitude()
+////                        , Toast.LENGTH_SHORT).show();
+//                gotoLocation(location.getLongitude(), location.getLatitude(), ZOOM_VALUE);
+//            }
+//        };
+//        LocationRequest request = LocationRequest.create();
+//        request.setPriority(LocationRequest.PRIORITY_LOW_POWER);
+//        request.setInterval(10000);
+//        request.setFastestInterval(1000);
+//        if (ContextCompat.checkSelfPermission(this,
+//                android.Manifest.permission.ACCESS_FINE_LOCATION)
+//                != PackageManager.PERMISSION_GRANTED) {
+//            requestPermissions();
+//        }
+//        LocationServices.FusedLocationApi.requestLocationUpdates(
+//                mLocationClient,request, mLocationListener);
+    }
+
+    private void requestPermissions() {
+        ActivityCompat.requestPermissions(this,
+                new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                MY_PERMISSIONS_REQUEST_FINE_LOCATION);
     }
 
     @Override
@@ -228,5 +268,11 @@ public class MainActivity extends AppCompatActivity
 
 
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+//        LocationServices.FusedLocationApi.removeLocationUpdates(mLocationClient, mLocationListener);
     }
 }
