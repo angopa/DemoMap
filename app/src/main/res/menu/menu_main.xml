@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="demos.android.com.craneo.myapplication.MainActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+        android:id="@+id/mapTypeNormal"
+        android:title="@string/nomal"/>
+    <item
+        android:id="@+id/mapTypeSatellite"
+        android:title="@string/satellite"/>
+    <item
+        android:id="@+id/mapTypeTerrain"
+        android:title="@string/terran"/>
+    <item
+        android:id="@+id/mapTypeHybrid"
+        android:title="@string/hybrid"/>
+    <item
+        android:id="@+id/mapTypeNone"
+        android:title="@string/none"/>
+
+    <item android:id="@+id/currentLocation"
+        android:title="@string/current_location"
+        app:showAsAction="always"
+        android:onClick="showCurrentLocation"/>
 </menu>
